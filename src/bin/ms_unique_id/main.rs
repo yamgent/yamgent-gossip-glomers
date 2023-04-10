@@ -26,12 +26,14 @@ impl Actor for UnqiueIdActor {
         _node_ids: Vec<String>,
     ) -> Result<(), maelstrom_rs::error::Error> {
         self.node_id = Some(node_id.to_string());
+        /*
         self.next = node_id
             .chars()
             .skip(1)
             .collect::<String>()
             .parse::<i32>()
             .unwrap();
+        */
 
         eprintln!("node {} initialized", node_id);
         Ok(())
@@ -41,9 +43,14 @@ impl Actor for UnqiueIdActor {
         match request.message_type.as_str() {
             "generate" => {
                 let mut body = Map::new();
-                body.insert("id".to_string(), Value::from(self.next));
+                body.insert(
+                    "id".to_string(),
+                    // Value::from(self.next),
+                    Value::from(format!("{}_{}", self.node_id.as_ref().unwrap(), self.next)),
+                );
 
-                self.next += 3;
+                // self.next += 3;
+                self.next += 1;
 
                 Ok(vec![Response::new_from_request(request, body)])
             }
